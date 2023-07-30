@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
 } from '@nestjs/common';
@@ -23,7 +24,7 @@ export class TracksController {
   }
 
   @Get('/:id')
-  getTrack(@Param() { id }: idDto) {
+  getTrack(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.tracksService.getTrack(id);
   }
 
@@ -34,13 +35,16 @@ export class TracksController {
   }
 
   @Put('/:id')
-  updateTrack(@Body() body: UpdateTrackDto, @Param() { id }: idDto) {
+  updateTrack(
+    @Body() body: UpdateTrackDto,
+    @Param('id', new ParseUUIDPipe()) id: string,
+  ) {
     return this.tracksService.updateTrack(body, id);
   }
 
   @Delete('/:id')
   @HttpCode(204)
-  deleteTrack(@Param() { id }: idDto) {
+  deleteTrack(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.tracksService.deleteTrack(id);
   }
 }

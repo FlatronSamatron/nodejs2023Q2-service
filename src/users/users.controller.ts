@@ -6,6 +6,7 @@ import {
   HttpCode,
   NotFoundException,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
 } from '@nestjs/common';
@@ -27,7 +28,7 @@ export class UsersController {
   }
 
   @Get('/:id')
-  getUser(@Param() { id }: idDto) {
+  getUser(@Param('id', new ParseUUIDPipe()) id: string) {
     const user = this.usersService.getUser(id);
     if (!user) {
       throw new NotFoundException('user not found');
@@ -43,7 +44,7 @@ export class UsersController {
 
   @Put('/:id')
   updateUserPassword(
-    @Param() { id }: idDto,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Body() body: UpdateUserPasswordDto,
   ) {
     return this.usersService.updateUserPassword(id, body);
@@ -51,7 +52,7 @@ export class UsersController {
 
   @Delete('/:id')
   @HttpCode(204)
-  deleteUser(@Param() { id }: idDto) {
+  deleteUser(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.usersService.removeUser(id);
   }
 }

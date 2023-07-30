@@ -1,4 +1,12 @@
-import { Controller, Delete, Get, HttpCode, Param, Post } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  ParseUUIDPipe,
+  Post,
+} from '@nestjs/common';
 import { FavoritesService } from './favorites.service';
 import { idDto } from '../id.dto';
 
@@ -12,35 +20,35 @@ export class FavoritesController {
   }
 
   @Post('/track/:id')
-  createFavoriteTrack(@Param() { id }: idDto) {
+  createFavoriteTrack(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.favoritesService.createFavoriteTrack(id);
   }
 
   @Post('/album/:id')
-  createFavoriteAlbum(@Param() { id }: idDto) {
+  createFavoriteAlbum(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.favoritesService.createFavoriteAlbum(id);
   }
 
   @Post('/artist/:id')
-  createFavoriteArtist(@Param() { id }: idDto) {
+  createFavoriteArtist(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.favoritesService.createFavoriteArtist(id);
   }
 
   @Delete('/track/:id')
   @HttpCode(204)
-  deleteFavoriteTrack(@Param() { id }: idDto) {
+  deleteFavoriteTrack(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.favoritesService.deleteFavoriteTrack(id);
   }
 
   @Delete('/album/:id')
   @HttpCode(204)
-  deleteFavoriteAlbum(@Param() { id }: idDto) {
+  deleteFavoriteAlbum(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.favoritesService.deleteFavoriteAlbum(id);
   }
 
   @Delete('/artist/:id')
   @HttpCode(204)
-  deleteFavoriteArtist(@Param() { id }: idDto) {
+  deleteFavoriteArtist(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.favoritesService.deleteFavoriteArtist(id);
   }
 }
