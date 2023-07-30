@@ -13,9 +13,11 @@ export class UsersService {
   }
   getUser(id: string) {
     const user = store.users.findOneBy(id);
+
     if (!user) {
       throw new NotFoundException('user not found');
     }
+
     return user;
   }
   createUser(login: string, pass: string) {

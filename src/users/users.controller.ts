@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   NotFoundException,
   Param,
   Post,
@@ -26,7 +27,7 @@ export class UsersController {
   }
 
   @Get('/:id')
-  getUser(@Param('id') { id }: idDto) {
+  getUser(@Param() { id }: idDto) {
     const user = this.usersService.getUser(id);
     if (!user) {
       throw new NotFoundException('user not found');
@@ -35,8 +36,9 @@ export class UsersController {
   }
 
   @Post()
+  @HttpCode(201)
   createUser(@Body() body: CreateUserDto) {
-    this.usersService.createUser(body.login, body.password);
+    return this.usersService.createUser(body.login, body.password);
   }
 
   @Put('/:id')
@@ -48,6 +50,7 @@ export class UsersController {
   }
 
   @Delete('/:id')
+  @HttpCode(204)
   deleteUser(@Param() { id }: idDto) {
     return this.usersService.removeUser(id);
   }
