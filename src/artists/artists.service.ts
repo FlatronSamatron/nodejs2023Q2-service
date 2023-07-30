@@ -11,7 +11,7 @@ export class ArtistsService {
     const artist = store.artists.findOneBy(id);
 
     if (!artist) {
-      throw new NotFoundException('user not found');
+      throw new NotFoundException('artist not found');
     }
 
     return artist;
