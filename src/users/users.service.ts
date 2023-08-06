@@ -3,16 +3,20 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { store } from '../store/store';
 import { UpdateUserPasswordDto } from './dtos/update-userPassword.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from './user.entity';
+import { Repository } from 'typeorm';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class UsersService {
+  constructor(@InjectRepository(User) private repo: Repository<User>) {}
   getAllUsers() {
-    return store.users.find();
+    return this.repo.find();
   }
-  getUser(id: string) {
-    const user = store.users.findOneBy(id);
+  async getUser(id: string) {
+    const user = await this.repo.findOneBy({ id });
 
     if (!user) {
       throw new NotFoundException('user not found');
@@ -21,10 +25,18 @@ export class UsersService {
     return user;
   }
   createUser(login: string, pass: string) {
-    return store.users.create(login, pass);
+    const user = this.repo.create({
+      id: uuidv4(),
+      login,
+      password: pass,
+      version: 1,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
+    return this.repo.save(user);
   }
-  updateUserPassword(id: string, body: UpdateUserPasswordDto) {
-    const user = store.users.findOneBy(id);
+  async updateUserPassword(id: string, body: UpdateUserPasswordDto) {
+    const user = await this.repo.findOneBy({ id });
 
     if (!user) {
       throw new NotFoundException('user not found');
@@ -34,15 +46,20 @@ export class UsersService {
       throw new ForbiddenException('Old password is wrong');
     }
 
-    return store.users.updateUserPassword(id, body.newPassword, user);
+    return this.repo.save({
+      ...user,
+      password: body.newPassword,
+      version: user.version + 1,
+      updatedAt: Date.now(),
+    });
   }
-  removeUser(id: string) {
-    const user = store.users.findOneBy(id);
+  async removeUser(id: string) {
+    const user = await this.repo.findOneBy({ id });
 
     if (!user) {
       throw new NotFoundException('user not found');
     }
 
-    return store.users.remove(id);
+    return this.repo.remove(user);
   }
 }

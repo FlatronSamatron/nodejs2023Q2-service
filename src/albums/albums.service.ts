@@ -2,15 +2,20 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { store } from '../store/store';
 import { CreaateAlbumDto } from './dtos/creaate-album.dto';
 import { UpdateAlbumDto } from './dtos/update-album.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Album } from './album.entity';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class AlbumsService {
+  constructor(@InjectRepository(Album) private repo: Repository<Album>) {}
   getAllAlbums() {
-    return store.albums.find();
+    return this.repo.find();
   }
 
-  getAlbum(id: string) {
-    const album = store.albums.findOneBy(id);
+  async getAlbum(id: string) {
+    const album = await this.repo.findOneBy({ id });
 
     if (!album) {
       throw new NotFoundException('album not found');
@@ -19,27 +24,34 @@ export class AlbumsService {
     return album;
   }
 
-  createAlbum(album: CreaateAlbumDto) {
-    return store.albums.create(album);
+  createAlbum(body: CreaateAlbumDto) {
+    const album = this.repo.create({
+      id: uuidv4(),
+      ...body,
+    });
+    return this.repo.save(album);
   }
 
-  updateAlbum(body: UpdateAlbumDto, id: string) {
-    const album = store.albums.findOneBy(id);
+  async updateAlbum(body: UpdateAlbumDto, id: string) {
+    const album = await this.repo.findOneBy({ id });
 
     if (!album) {
       throw new NotFoundException('album not found');
     }
 
-    return store.albums.update(body, id, album);
+    return this.repo.save({
+      ...album,
+      ...body,
+    });
   }
 
-  deleteAlbum(id: string) {
-    const album = store.albums.findOneBy(id);
+  async deleteAlbum(id: string) {
+    const album = await this.repo.findOneBy({ id });
 
     if (!album) {
       throw new NotFoundException('album not found');
     }
 
-    return store.albums.delete(id);
+    return this.repo.remove(album);
   }
 }
