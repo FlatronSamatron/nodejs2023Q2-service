@@ -47,7 +47,11 @@ export class FavoritesService {
     const albums = await Promise.all(favAlbums);
     const artists = await Promise.all(favArtists);
 
-    return { tracks, albums, artists };
+    return {
+      tracks: tracks.filter((o) => o),
+      albums: albums.filter((o) => o),
+      artists: artists.filter((o) => o),
+    };
   }
 
   async createFavoriteTrack(id: string) {

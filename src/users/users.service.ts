@@ -50,6 +50,7 @@ export class UsersService {
       ...user,
       password: body.newPassword,
       version: user.version + 1,
+      createdAt: Number(user.createdAt),
       updatedAt: Date.now(),
     });
   }
