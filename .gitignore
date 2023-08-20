@@ -1,4 +1,6 @@
-*.env
+pgdata
+
+.env
 
 # compiled output
 /dist

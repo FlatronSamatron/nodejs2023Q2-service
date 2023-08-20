@@ -1,5 +1,17 @@
 # Home Library Service
 
+## Running application
+
+To start app run:
+
+```
+docker compose up
+```
+
+## DockerHub repo
+
+[DockerHub](https://hub.docker.com/r/flatrosamatron/nodejs2023q2-service-app/tags)
+
 ## Prerequisites
 
 - Git - [Download & Install Git](https://git-scm.com/downloads).

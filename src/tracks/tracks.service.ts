@@ -2,16 +2,20 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { store } from '../store/store';
 import { CreateTrackDto } from './dtos/create-track.dto';
 import { UpdateTrackDto } from './dtos/update-track.dto';
-import { UpdateAlbumDto } from '../albums/dtos/update-album.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Track } from './track.entity';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class TracksService {
+  constructor(@InjectRepository(Track) private repo: Repository<Track>) {}
   getAllTracks() {
-    return store.tracks.find();
+    return this.repo.find();
   }
 
-  getTrack(id: string) {
-    const track = store.tracks.findOneBy(id);
+  async getTrack(id: string) {
+    const track = await this.repo.findOneBy({ id });
 
     if (!track) {
       throw new NotFoundException('track not found');
@@ -21,26 +25,30 @@ export class TracksService {
   }
 
   createTrack(body: CreateTrackDto) {
-    return store.tracks.create(body);
+    const track = this.repo.create({
+      id: uuidv4(),
+      ...body,
+    });
+    return this.repo.save(track);
   }
 
-  updateTrack(body: UpdateTrackDto, id: string) {
-    const track = store.tracks.findOneBy(id);
+  async updateTrack(body: UpdateTrackDto, id: string) {
+    const track = await this.repo.findOneBy({ id });
 
     if (!track) {
       throw new NotFoundException('track not found');
     }
 
-    return store.tracks.update(body, id, track);
+    return this.repo.save({ ...track, ...body });
   }
 
-  deleteTrack(id: string) {
-    const track = store.tracks.findOneBy(id);
+  async deleteTrack(id: string) {
+    const track = await this.repo.findOneBy({ id });
 
     if (!track) {
       throw new NotFoundException('track not found');
     }
 
-    return store.tracks.delete(id);
+    return this.repo.remove(track);
   }
 }
