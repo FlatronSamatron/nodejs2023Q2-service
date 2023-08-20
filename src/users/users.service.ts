@@ -15,6 +15,11 @@ export class UsersService {
   getAllUsers() {
     return this.repo.find();
   }
+
+  async getUserByLogin(login) {
+    return this.repo.find({ where: { login } });
+  }
+
   async getUser(id: string) {
     const user = await this.repo.findOneBy({ id });
 

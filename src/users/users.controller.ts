@@ -11,7 +11,6 @@ import {
   Put,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { idDto } from '../id.dto';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserPasswordDto } from './dtos/update-userPassword.dto';
 import { UserDto } from './dtos/user.dto';
